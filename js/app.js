@@ -1,7 +1,7 @@
 (function() {
   'use strict';
 
-  const movies = [];
+  var movies = [];
 
   const renderMovies = function() {
     $('#listings').empty();
@@ -44,7 +44,6 @@
       const $modalHeader = $('<h4>').text(movie.title);
       const $movieYear = $('<h6>').text(`Released in ${movie.year}`);
       const $modalText = $('<p>').text(movie.plot);
-
       $modalContent.append($modalHeader, $movieYear, $modalText);
       $modal.append($modalContent);
 
@@ -56,5 +55,35 @@
     }
   };
 
-  // ADD YOUR CODE HERE
+
+  $('button').on("click", function(){
+    movies = []
+    event.preventDefault();
+    let userInput = $('#search').val()
+    let link = 'https://omdb-api.now.sh/?s='
+    let $xhr = $.getJSON(link.concat(userInput))
+    console.log(userInput)
+    if (userInput === '') {
+      alert('Please input movie title.')
+    }
+
+    var movieData = {}
+
+    $xhr.done(function(data) {
+      if ($xhr.status !== 200) {
+      return
+      }
+
+    for (var i = 0; i < data.Search.length; i++) {
+      movieData = {
+        'id': data.Search[i].imdbID,
+        'poster': data.Search[i].Poster,
+        'title': data.Search[i].Title,
+        'year': data.Search[i].Year,
+      }
+      movies.push(movieData)
+    }
+    renderMovies()
+    })
+  })
 })();
